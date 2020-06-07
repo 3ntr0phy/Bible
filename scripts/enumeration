@@ -1,0 +1,9 @@
+
+domain=$1
+echo "Enumerating $domain"
+
+nmap -sSCV -v -A -p- -oA ./nmap_tcp $domain
+/root/go/bin/gobuster dir -w /usr/share/seclists/Discovery/Web-Content/raft-large-words.txt -x txt,php,html  -a "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" -u http://$domain/  --timeout 60s -r
+target="http://$domain/"
+header="Host: FUZZ.$domain"
+wfuzz -c -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt --hw 0 -t 100 -H "$header" $target
